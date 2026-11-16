@@ -154,4 +154,4 @@ rm -f /var/lib/webosbrew/init.d/99-autodac /home/root/auto-dac.sh && killall aut
 * **[nickvsnetworking/webos-audiostream-remote](https://github.com/nickvsnetworking/webos-audiostream-remote)** — For discovering and documenting the `hw:0,13` (`MARS CAPTURE_TEST`) internal ALSA capture tap on LG webOS TVs.
 * **[webosbrew / OpenLGTV Community](https://github.com/webosbrew/webos-homebrew-channel)** — For Homebrew Channel, `init.d` startup hooks, and [Dev Manager](https://github.com/webosbrew/dev-manager-desktop).
 * **[throwaway96/webos-kernel-drivers](https://github.com/throwaway96/webos-kernel-drivers)** — For LG webOS SoC and `init.d` documentation.
-* **AI Assistance** — Buffer troubleshooting, hotplug loop structure, and documentation formatting assisted by AI (Argon 4 High / Gemini).
+* **AI Assistance** — Hotplug loop structure, and documentation formatting assisted by AI (Argon 4 High / Gemini).
