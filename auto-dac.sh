@@ -1,8 +1,6 @@
 #!/bin/sh
-# webos-usb-dac-audio: Automatic USB DAC Hotplug Script for Rooted LG webOS TVs
-
-DAC_ID="AudiocularAura"   # Replace with your DAC's Card ID from: cat /proc/asound/cards
-CAPTURE_DEV="hw:0,13"     # Replace if your TV's capture device in 'arecord -l' differs
+DAC_ID="AudiocularAura"
+CAPTURE_DEV="hw:0,13"
 BUFFER_SIZE="2048"
 
 while true; do
