@@ -17,7 +17,7 @@ However, LG left the `snd-usb-audio` driver compiled inside the TV's Linux kerne
 
 By reading the TV's internal ALSA audio stream with `arecord` and sending it straight to `aplay` on the USB DAC, you get uncompressed 48kHz 16 bit stereo PCM audio directly from the USB port to your 3.5mm AUX speakers.
 
-Using a `2048` buffer size keeps the sound matched closely enough with the TV's internal speakers that you do not need to change any TV sound settings or mute the TV. Both the TV speakers and your external speakers can play together, each with its own volume control.
+Using a `2048` buffer size keeps the sound matched closely enough with the TV's internal speakers that you do not need to change any TV sound settings or mute the TV. Both the TV speakers and your external speakers can play together, each with its own volume control (TV remote for TV speakers, speaker knob or remote for AUX speakers).
 
 ```text
 [ TV Internal Audio (hw:0,13) ] ──(48kHz Stereo PCM)──> [ USB DAC (snd-usb-audio) ] ──> [ 3.5mm AUX Speakers ]
@@ -36,8 +36,8 @@ Using a `2048` buffer size keeps the sound matched closely enough with the TV's 
 
 **Honest transparency note on compatibility:**
 * **Tested:** Only on the setup listed above.
-* **Expected to work (not personally tested):** Other rooted Realtek LG TVs (`k6hp`, `k7lp`, `k8lp`, `k8hp`, `k8hpp`and etc,  check your TV chip on [throwaway96/webos-kernel-drivers](https://github.com/throwaway96/webos-kernel-drivers)) and other standard plug and play USB DACs, as long as your TV kernel includes `snd-usb-audio`.
-* **Not supported:** LG OLED TVs (Alpha chips like `O18`, `O20`, `O22`, `O24`) and MediaTek TVs (`M16P`, `LM21A`) do not use the Realtek `Mars` audio driver, so `MARS CAPTURE_TEST` does not exist on them. On those chips, media and HDMI audio usually bypass standard ALSA capture devices. Step 1 below lets you check your TV in 30 seconds so you do not waste your time.
+* **Expected to work (not personally tested):** Other rooted Realtek LG TVs (`k6hp`, `k7lp`, `k8lp`, `k8hp`, `k8hpp`, etc., check your TV chip on [throwaway96/webos-kernel-drivers](https://github.com/throwaway96/webos-kernel-drivers)) and other standard plug and play USB DACs, as long as your TV kernel includes `snd-usb-audio`.
+* **Not supported:** LG TVs with LX Semicon / Alpha chips (`O18`, `O20`, `O22`, `O24`, `M16P`, `M23`), MStar (`LM18A`, `LM21A`), or MediaTek (`A5LR`) chips do not use the Realtek `Mars` audio driver, so `MARS CAPTURE_TEST` does not exist on them. On those chips, media and HDMI audio usually bypass standard ALSA capture devices. Step 1 below lets you check your TV in 30 seconds so you do not waste your time.
 
 ---
 
@@ -61,12 +61,12 @@ arecord -l
 ```
 
 #### 1. Check `cat /proc/asound/cards` and `aplay -l` for your USB DAC:
-* **If your USB DAC shows up:** Your TV kernel supports USB audio. Note your DAC's card number and the exact **Card ID** inside the `[ ]` brackets:
+* **If your USB DAC shows up:** Your TV kernel supports USB audio. Note your DAC's card number and the exact **Card ID** inside the `[ ]` brackets (**do not include any trailing spaces** inside the brackets):
   ```text
   2 [AudiocularAura ]: USB-Audio - Audiocular-Aura
                        TTGK Technology Audiocular-Aura at usb-18050000.xhci_top-1, high speed
   ```
-  *(In my case, the card number is `2` and the Card ID is `AudiocularAura`).*
+  *(In my case, the card number is `2` and the Card ID is `AudiocularAura`, without the trailing space).*
 * **If your USB DAC does NOT show up at all:** Stop here so you do not waste your time. Your TV model's kernel was compiled without `snd-usb-audio`. Instead, look at [nickvsnetworking/webos-audiostream-remote](https://github.com/nickvsnetworking/webos-audiostream-remote), which streams `hw:0,13` over Wi-Fi to a phone or PC where you can plug in your DAC.
 
 #### 2. Check `arecord -l` for your TV's internal audio capture device (`hw:X,Y`):
@@ -138,11 +138,13 @@ chmod +x /var/lib/webosbrew/init.d/99-autodac
 
 Wait 3 seconds for your speakers to start playing, then close your terminal and Dev Manager. You can plug and unplug your DAC anytime. *(Note: On rare occasions after waking the TV from Quick Start+ standby, unplugging the DAC for 4 seconds and plugging it back in resets the audio stream).*
 
+* **Note on long 3 hour sessions:** Standard `arecord` WAV streams have a 2 GB limit (about 3 hours and 6 minutes at 48kHz 16 bit stereo). With `auto-dac.sh`, the loop simply restarts automatically after a 3 second pause. *(Untested tip: adding `-t raw` to `arecord` and `-t raw -f S16_LE -r 48000 -c 2` to `aplay` removes that 2 GB limit if you want zero pause during 4 hour movie marathons).*
+
 ---
 
 ## Does This Affect TV Storage or RAM?
 
-* **Zero TV storage used:** Even though the command is named `arecord`, the pipe (`|`) passes audio through a tiny 8 KB buffer in RAM directly to `aplay`. Zero audio files or log files (`>/dev/null 2>&1`) are written to your TV's storage.
+* **Zero TV storage used:** Even though the command is named `arecord`, the pipe (`|`) passes audio through an 8 KB ALSA ring buffer and RAM pipe directly to `aplay`. Zero audio files or log files (`>/dev/null 2>&1`) are written to your TV's storage.
 * **Very small RAM usage:** Uses roughly 1.8 MB of RAM while the DAC is plugged in, and drops to roughly 0.12 MB (0.0% CPU) when unplugged.
 * **No leftover processes:** The loop waits for the current audio stream to close before looping again and runs `killall` on unplug, so duplicate processes do not stack up.
 
