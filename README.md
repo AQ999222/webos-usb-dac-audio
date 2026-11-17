@@ -36,7 +36,7 @@ Using a `2048` buffer size keeps the sound matched closely enough with the TV's 
 
 **Honest transparency note on compatibility:**
 * **Tested:** Only on the setup listed above.
-* **Expected to work (not personally tested):** Other rooted Realtek LG TVs (`k6hp`, `k7lp`, `k8lp`, `k8hp`, `k8hpp`, check your TV chip on [throwaway96/webos-kernel-drivers](https://github.com/throwaway96/webos-kernel-drivers)) and other standard plug and play USB DACs, as long as your TV kernel includes `snd-usb-audio`.
+* **Expected to work (not personally tested):** Other rooted Realtek LG TVs (`k6hp`, `k7lp`, `k8lp`, `k8hp`, `k8hpp`and etc,  check your TV chip on [throwaway96/webos-kernel-drivers](https://github.com/throwaway96/webos-kernel-drivers)) and other standard plug and play USB DACs, as long as your TV kernel includes `snd-usb-audio`.
 * **Not supported:** LG OLED TVs (Alpha chips like `O18`, `O20`, `O22`, `O24`) and MediaTek TVs (`M16P`, `LM21A`) do not use the Realtek `Mars` audio driver, so `MARS CAPTURE_TEST` does not exist on them. On those chips, media and HDMI audio usually bypass standard ALSA capture devices. Step 1 below lets you check your TV in 30 seconds so you do not waste your time.
 
 ---
